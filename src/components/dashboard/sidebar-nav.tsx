@@ -26,7 +26,8 @@ import {
     Tag,
     MessageCircleReply,
     Contact,
-    UserPlus
+    UserPlus,
+    DatabaseBackup
 } from "lucide-react";
 import { useSidebar } from "./sidebar-context";
 import {
@@ -64,6 +65,7 @@ export const navGroups: NavGroup[] = [
             { href: "/dashboard/chat", label: "Conversas", icon: MessageSquare },
             { href: "/dashboard/broadcast", label: "Transmissão", icon: Megaphone },
             { href: "/dashboard/sticker", label: "Criador de figurinhas", icon: ImageIcon },
+            { href: "/dashboard/archive", label: "Exportar conversas", icon: DatabaseBackup },
         ],
     },
     {

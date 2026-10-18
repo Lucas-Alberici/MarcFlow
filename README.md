@@ -17,6 +17,7 @@ Criado por **Marcos Maia** · [@marcolamaia](https://instagram.com/marcolamaia)
 - **Grupos:** categorias, ações em lote, sair e apagar de verdade, criar grupo e conversa do grupo no painel.
 - **Respostas rápidas:** sequências de texto, mídia, voz, etiquetas e mais, disparadas da conversa aberta.
 - **Conversas:** caixa de entrada em tempo real, notas de voz que tocam no iPhone e aviso de robô pausado durante o atendimento humano.
+- **Exportar conversas:** selecione várias conversas (ou todas) e baixe um ZIP com uma pasta por conversa: histórico em TXT, áudios originais e, se quiser, fotos, vídeos e documentos. O sistema junta o que já tem salvo e pede ao celular o histórico antigo; o WhatsApp não garante entregar tudo, e o que faltar vai listado no relatório do ZIP.
 - **API REST e webhooks:** documentação interativa em `/docs`.
 
 ## Instalação

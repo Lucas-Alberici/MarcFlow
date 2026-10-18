@@ -53,6 +53,9 @@ app.prepare().then(() => {
   waManager.setup(io);
   waManager.loadSessions();
 
+  // Exports left "running" by a previous process: only the real server start may decide that (dev mode also evaluates the manager again inside request handlers)
+  import("../modules/archive/import").then(m => m.pauseOrphanedArchives()).catch(e => logger.error("Archive", "could not pause orphaned exports", e));
+
   // Start Scheduler
   import("../modules/whatsapp/scheduler").then(m => m.startScheduler());
 

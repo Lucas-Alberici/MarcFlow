@@ -29,6 +29,7 @@ import {
     Tag,
     MessageCircleReply,
     UserPlus,
+    DatabaseBackup,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
@@ -54,6 +55,7 @@ const navGroups: NavGroup[] = [
             { href: "/dashboard/chat", label: "Conversas", icon: MessageSquare },
             { href: "/dashboard/broadcast", label: "Transmissão", icon: Megaphone },
             { href: "/dashboard/sticker", label: "Criador de figurinhas", icon: ImageIcon },
+            { href: "/dashboard/archive", label: "Exportar conversas", icon: DatabaseBackup },
         ],
     },
     {

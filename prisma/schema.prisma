@@ -73,6 +73,7 @@ model Session {
   botConfig   BotConfig?
   sessionAccesses SessionAccess[]
   flows       Flow[]
+  archiveChats ArchiveChat[]
 }
 
 model Contact {
@@ -634,4 +635,70 @@ model BroadcastOptOut {
   createdAt DateTime @default(now())
 
   @@id([sessionId, jid])
+}
+
+// "Exportar conversas": saved history of one WhatsApp account, ready to export (ZIP with TXT + audio).
+// Files live in data/archive/<Session.id>/<chat folder>/; one job at a time per session.
+model ArchiveJob {
+  id           String    @id @default(cuid())
+  userId       String
+  sessionId    String    // Session.id (cuid)
+  accountJid   String?   // WhatsApp account the history came from
+  status       String    @default("running") // running | paused | completed | completed_with_errors | cancelled
+  phase        String    @default("scan")    // scan | backfill | media | done
+  includeMedia Boolean   @default(false)     // photos, videos, documents and stickers (audio is always included)
+  chatJids     Json?     // selected chats (string[]); null = every chat of the session
+  cursor       Json?     // resume state of the local scan
+  note         String?   @db.Text            // why it paused / last warning
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+  updatedAt    DateTime  @updatedAt
+
+  @@index([sessionId, createdAt])
+}
+
+model ArchiveChat {
+  id            String   @id @default(cuid())
+  userId        String
+  sessionId     String   // Session.id (cuid)
+  jid           String
+  name          String?
+  isGroup       Boolean  @default(false)
+  folder        String   // stable folder name: <name>__<number>
+  backfillDone  Boolean  @default(false) // no older messages left to request from the phone
+  backfillNote  String?  @db.Text
+  backfillError String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  session  Session          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  messages ArchiveMessage[]
+
+  @@unique([sessionId, jid])
+  @@index([sessionId, backfillDone])
+}
+
+model ArchiveMessage {
+  id         String   @id @default(cuid())
+  chatId     String
+  sessionId  String   // Session.id (cuid)
+  keyId      String   // WhatsApp message id: makes re-imports idempotent
+  fromMe     Boolean
+  senderJid  String?
+  senderName String?
+  type       String   @default("TEXT") // TEXT IMAGE VIDEO AUDIO DOCUMENT STICKER LOCATION CONTACT
+  text       String?  @db.LongText
+  timestamp  DateTime @db.DateTime(3)
+  quotedId   String?
+  raw        String?  @db.LongText // WAMessage JSON, only for media (needed to download it later)
+  mediaState String   @default("none") // none | pending | saved | skipped | unavailable | error
+  mediaFile  String?  // path inside the chat folder, e.g. audios/<file>
+  mediaMime  String?
+  mediaSize  Int?
+  mediaError String?  @db.Text
+
+  chat ArchiveChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, keyId])
+  @@index([chatId, timestamp, id])
+  @@index([sessionId, mediaState])
 }

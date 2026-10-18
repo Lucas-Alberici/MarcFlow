@@ -51,3 +51,4 @@ next-env.d.ts
 /data/avatars/
 server.log
 /logs/
+/data/archive/

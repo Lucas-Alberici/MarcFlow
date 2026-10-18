@@ -1,5 +1,9 @@
 # Changelog
 
+## [Não lançado]
+
+- Nova aba **Exportar conversas**: seleção de várias conversas (ou todas), sincronização do histórico e download de um ZIP com TXT por conversa, áudios originais, mídias opcionais, índice e relatório do que ficou indisponível
+
 ## [1.0.0] - 2026-10-18
 
 Primeira versão do **MarcFlow**, criado por Marcos Maia ([@marcolamaia](https://instagram.com/marcolamaia)).

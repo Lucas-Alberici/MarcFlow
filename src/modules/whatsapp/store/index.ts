@@ -7,6 +7,7 @@ import { normalizeMessageContent } from "@whiskeysockets/baileys";
 import { onMessageReceived, onMessageSent, dispatchWebhook, downloadAndSaveMedia } from "@/lib/webhook";
 import { handleBotCommand, setSessionStartTime } from "../bot/command-handler";
 import { resolveToPhoneJid, isLidJid, normalizeJid } from "@/lib/jid-utils";
+import { archiveMediaPolicy } from "@/modules/archive/import";
 
 import { Server } from "socket.io";
 import { logger } from "@/lib/logger";
@@ -114,7 +115,7 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server |
             logger.info("Store", `Syncing ${messages.length} historical messages...`);
             for (const msg of messages) {
                 try {
-                    await processAndSaveMessage(msg, dbSessionId, sessionId, false, sock, undefined, io);
+                    await processAndSaveMessage(msg, dbSessionId, sessionId, false, sock, undefined, io, true);
                 } catch (error) {
                     logger.error("Store", "Error saving historical message", error);
                 }
@@ -291,7 +292,8 @@ async function processAndSaveMessage(
     triggerWebhook: boolean,
     sock?: WASocket,
     config?: any,
-    io?: Server | null
+    io?: Server | null,
+    fromHistory = false
 ) {
     const keyId = msg.key.id;
     const remoteJid = msg.key.remoteJid;
@@ -486,8 +488,11 @@ async function processAndSaveMessage(
 
     // Download Media First (to save URL to DB)
     let fileUrl: string | null = null;
+    // While an "Importar e exportar conversas" run has media switched off, history sync keeps only audio:
+    // the archive holds the raw message and can fetch the rest later
+    const skipHeavyMedia = fromHistory && archiveMediaPolicy(sessionId) === false && messageType !== "AUDIO";
     try {
-        fileUrl = await downloadAndSaveMedia(msg, sessionId);
+        if (!skipHeavyMedia) fileUrl = await downloadAndSaveMedia(msg, sessionId);
     } catch (e) {
         logger.error("Store", "Error downloading media in store", e);
     }
