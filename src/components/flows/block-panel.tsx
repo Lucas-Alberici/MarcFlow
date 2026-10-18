@@ -14,8 +14,9 @@ import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-    ANSWER_TYPES, BLOCKS, WEEKDAYS, newId, type AnswerType, type ConditionData, type ConditionOp, type ConditionSource,
+    ANSWER_TYPES, BLOCKS, POLL_MAX_OPTIONS, POLL_MAX_QUESTION, WEEKDAYS, newId, type AnswerType, type ConditionData, type ConditionOp, type ConditionSource,
     type ContentItem, type FieldScope, type FieldType, type FlowAction, type FlowCondition, type FlowNode, type MediaKind,
     type MenuData, type NodeDataMap, type RandomizerData, type SmartDelayData, type TimeUnit,
 } from "@/modules/flows/types";
@@ -281,22 +282,42 @@ function ItemEditor({ item, onChange, color }: { item: ContentItem; onChange: (i
 function MenuEditor({ node, set, color }: { node: FlowNode<"menu">; set: (d: MenuData) => void; color: string }) {
     const d = node.data;
     const opts = d.options;
+    const poll = d.mode === "poll";
+    const full = poll && opts.length >= POLL_MAX_OPTIONS;
     return (
         <div className="space-y-4">
-            <Section title="Pergunta" hint="As respostas são enviadas numeradas. O contato pode responder com o número ou com o texto da opção.">
-                <TextField value={d.question} onChange={question => set({ ...d, question })} placeholder="Ex.: Como posso ajudar?" accent={color} />
+            <Section title="Como o contato responde">
+                <RadioGroup value={poll ? "poll" : "number"} onValueChange={v => set({ ...d, mode: v as "poll" | "number" })} className="gap-2">
+                    <label className="flex cursor-pointer items-start gap-2.5">
+                        <RadioGroupItem value="poll" className="mt-0.5" />
+                        <span className="text-[13px]"><b>Enquete</b> — toca na opção<span className="block text-[11px] text-muted-foreground">Até {POLL_MAX_OPTIONS} respostas. Funciona no Android, iPhone e WhatsApp Web.</span></span>
+                    </label>
+                    <label className="flex cursor-pointer items-start gap-2.5">
+                        <RadioGroupItem value="number" className="mt-0.5" />
+                        <span className="text-[13px]"><b>Número</b> — digita o número<span className="block text-[11px] text-muted-foreground">Pergunta e opções numeradas numa mensagem de texto.</span></span>
+                    </label>
+                </RadioGroup>
+                <p className="text-[11px] text-muted-foreground">Botão de lista (&quot;Ver opções&quot;) não está disponível: o WhatsApp só entrega listas e botões para a API oficial, e esta conexão usa o WhatsApp Web.</p>
             </Section>
-            <Section title="Respostas">
+            <Section title={poll ? "Pergunta da enquete" : "Pergunta"} hint={poll
+                ? `Até ${POLL_MAX_QUESTION} caracteres. Quem não tocar ainda pode digitar o número ou o texto da opção.`
+                : "As respostas são enviadas numeradas. O contato pode responder com o número ou com o texto da opção."}>
+                <TextField value={d.question} onChange={question => set({ ...d, question })} placeholder="Ex.: Como posso ajudar?" accent={color} />
+                {poll && d.question.length > POLL_MAX_QUESTION && <p className="text-[11px] text-destructive">{d.question.length}/{POLL_MAX_QUESTION} caracteres</p>}
+            </Section>
+            <Section title={poll ? `Respostas (${opts.length}/${POLL_MAX_OPTIONS})` : "Respostas"}>
                 <div className="space-y-2">
                     {opts.map((o, i) => (
                         <div key={o.id} className="flex items-center gap-2">
-                            <span className="w-5 text-sm font-bold" style={{ color }}>{i + 1}.</span>
+                            <span className="w-5 text-sm font-bold" style={{ color }}>{poll ? "○" : `${i + 1}.`}</span>
                             <Input className="h-9" autoFocus={i === opts.length - 1 && !o.text} placeholder={`Resposta ${i + 1}`} value={o.text} maxLength={100} onChange={e => set({ ...d, options: opts.map(x => x.id === o.id ? { ...x, text: e.target.value } : x) })} />
                             <IconBtn title="Subir" disabled={i === 0} onClick={() => { const a = [...opts]; [a[i - 1], a[i]] = [a[i], a[i - 1]]; set({ ...d, options: a }); }}><ArrowUp className="h-3.5 w-3.5" /></IconBtn>
                             <IconBtn title="Excluir" danger onClick={() => set({ ...d, options: opts.filter(x => x.id !== o.id) })}><X className="h-3.5 w-3.5" /></IconBtn>
                         </div>
                     ))}
-                    <AddButton color={color} onClick={() => set({ ...d, options: [...opts, { id: newId(), text: "" }] })}>Adicionar resposta</AddButton>
+                    {full
+                        ? <p className="text-center text-[11px] text-muted-foreground">A enquete do WhatsApp aceita até {POLL_MAX_OPTIONS} respostas.</p>
+                        : <AddButton color={color} onClick={() => set({ ...d, options: [...opts, { id: newId(), text: "" }] })}>Adicionar resposta</AddButton>}
                 </div>
             </Section>
             <Section title="Texto para resposta inválida"><TextField value={d.invalidText} onChange={invalidText => set({ ...d, invalidText })} rows={2} accent={color} /></Section>

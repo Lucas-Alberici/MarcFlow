@@ -1,9 +1,11 @@
+import crypto from "crypto";
 import fs from "fs/promises";
 import moment from "moment-timezone";
-import type { WASocket } from "@whiskeysockets/baileys";
+import { decryptPollVote, jidNormalizedUser, normalizeMessageContent, type WAMessage, type WASocket } from "@whiskeysockets/baileys";
 import { Prisma, type FlowRun } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { logger } from "@/lib/logger";
+import { isLidJid, resolveToPhoneJid } from "@/lib/jid-utils";
 import {
     type ContentItem, type FlowAction, type FlowGraph, type FlowNode, type MenuData, type NodeDataMap,
     type RandomizerData, type SmartDelayData, type FieldScope,
@@ -20,8 +22,12 @@ const ACTIVE: FlowRun["status"][] = ["RUNNING", "WAITING_INPUT", "WAITING_DELAY"
 
 type Wait =
     | { kind: "input"; nodeId: string; itemIndex: number; attempts: number }
-    | { kind: "menu"; nodeId: string; errors: number }
+    | { kind: "menu"; nodeId: string; errors: number; poll?: PollRef }
     | { kind: "delay"; nodeId: string };
+
+/** A poll sent by a Menu block: what's needed to decrypt and read a vote on it. */
+interface PollRef { id: string; secret: string; creators: string[]; values: string[] }
+const SIM_POLL_CREATOR = "simulador@sim";
 
 export interface IncomingMessage {
     remoteJid: string;
@@ -152,12 +158,14 @@ async function setField(ctx: Ctx, key: string, scope: FieldScope | undefined, va
 async function send(ctx: Ctx, nodeId: string, payload: Parameters<WASocket["sendMessage"]>[1], summary: string, to = ctx.jid) {
     if (isSimJid(ctx.jid)) {
         const text = "text" in payload ? payload.text : summary;
-        return log(ctx.run.id, nodeId, "SEND", { to: to === ctx.jid ? undefined : to, summary, text, simulated: true });
+        await log(ctx.run.id, nodeId, "SEND", { to: to === ctx.jid ? undefined : to, summary, text, simulated: true });
+        return undefined;
     }
     const sock = await getSocket(ctx.sessionId);
     if (!sock) throw new Error("Sessão do WhatsApp desconectada");
-    await sock.sendMessage(to, payload);
+    const sent = await sock.sendMessage(to, payload);
     await log(ctx.run.id, nodeId, "SEND", { to: to === ctx.jid ? undefined : to, summary });
+    return sent;
 }
 
 async function sendItem(ctx: Ctx, nodeId: string, item: ContentItem, vars: Record<string, string>) {
@@ -205,6 +213,18 @@ async function sendItem(ctx: Ctx, nodeId: string, item: ContentItem, vars: Recor
         case "input":
             return send(ctx, nodeId, { text: renderTemplate(item.question, vars) }, item.question.slice(0, 80));
     }
+}
+
+/** Sends a single-choice WhatsApp poll. We pick the secret so a vote can be decrypted later (Baileys 7 doesn't do it). */
+async function sendPoll(ctx: Ctx, nodeId: string, name: string, values: string[]): Promise<PollRef> {
+    const secret = crypto.randomBytes(32);
+    const shown = `📊 ${name}\n\n${values.map(v => `○ ${v}`).join("\n")}`;
+    const sent = await send(ctx, nodeId, { poll: { name, values, selectableCount: 1, messageSecret: secret } }, shown);
+    if (isSimJid(ctx.jid)) return { id: `SIMPOLL${crypto.randomUUID()}`, secret: secret.toString("base64"), creators: [SIM_POLL_CREATOR], values };
+    const me = (await getSocket(ctx.sessionId))?.user;
+    if (!sent?.key.id) throw new Error("Enquete enviada sem id");
+    // a vote is signed with our phone jid or our LID, depending on how the chat is addressed
+    return { id: sent.key.id, secret: secret.toString("base64"), creators: [me?.id, me?.lid].filter((j): j is string => !!j).map(jidNormalizedUser), values };
 }
 
 // ---------- actions ----------
@@ -319,9 +339,11 @@ async function execute(ctx: Ctx, startNodeId: string | null, startItem = 0): Pro
 
                 case "menu": {
                     const d = node.data as MenuData;
-                    await send(ctx, node.id, { text: renderTemplate(menuText(d.question, d.options), vars) }, d.question.slice(0, 80));
+                    const poll = d.mode === "poll"
+                        ? await sendPoll(ctx, node.id, renderTemplate(d.question, vars), d.options.map(o => renderTemplate(o.text, vars)))
+                        : (await send(ctx, node.id, { text: renderTemplate(menuText(d.question, d.options), vars) }, d.question.slice(0, 80)), undefined);
                     const resumeAt = new Date(Date.now() + Math.max(1, d.expireValue) * unitMs[d.expireUnit]);
-                    await save(ctx, { status: "WAITING_INPUT", wait: { kind: "menu", nodeId: node.id, errors: 0 }, resumeAt });
+                    await save(ctx, { status: "WAITING_INPUT", wait: { kind: "menu", nodeId: node.id, errors: 0, ...(poll ? { poll } : {}) }, resumeAt });
                     await log(ctx.run.id, node.id, "WAIT", { menu: d.options.length, until: resumeAt.toISOString() });
                     return;
                 }
@@ -406,9 +428,9 @@ async function loadCtx(run: FlowRun, sessionId: string, lastText = ""): Promise<
 }
 
 // ---------- public API ----------
-export async function startRun(opts: { flowId: string; graph: FlowGraph; dbSessionId: string; sessionId: string; jid: string; isTest?: boolean; keyId?: string; text?: string }) {
-    const start = opts.graph.nodes.find(n => n.type === "start");
-    if (!start) throw new Error("Fluxo sem bloco inicial");
+export async function startRun(opts: { flowId: string; graph: FlowGraph; dbSessionId: string; sessionId: string; jid: string; isTest?: boolean; keyId?: string; text?: string; startNodeId?: string }) {
+    const start = opts.startNodeId ? opts.graph.nodes.find(n => n.id === opts.startNodeId) : opts.graph.nodes.find(n => n.type === "start");
+    if (!start) throw new Error(opts.startNodeId ? `Bloco "${opts.startNodeId}" não existe no fluxo` : "Fluxo sem bloco inicial");
     const run = await prisma.flowRun.create({
         data: {
             flowId: opts.flowId, sessionId: opts.dbSessionId, contactJid: opts.jid, isTest: !!opts.isTest,
@@ -427,6 +449,22 @@ export async function startTestRun(opts: { flowId: string; graph: FlowGraph; dbS
         await prisma.flowRun.updateMany({ where: { sessionId: opts.dbSessionId, contactJid: opts.jid, status: { in: ACTIVE } }, data: { status: "CANCELLED", wait: Prisma.DbNull, resumeAt: null } });
         return startRun({ ...opts, isTest: true });
     });
+}
+
+/**
+ * Writes contact fields from outside a conversation (e.g. a purchase webhook). Serialized with the contact's runs so a
+ * flow step never overwrites it. `start` then replaces the contact's active run with the published flow at one block;
+ * that part is not awaited (sends can be slow and webhooks have short timeouts).
+ */
+export async function applyExternalEvent(opts: { dbSessionId: string; sessionId: string; jid: string; fields: Record<string, string>; start?: { flowId: string; graph: FlowGraph; nodeId: string } }) {
+    const key = `${opts.dbSessionId}:${opts.jid}`;
+    await enqueue(key, () => setFlowData(opts.dbSessionId, opts.jid, { fields: opts.fields }));
+    const start = opts.start;
+    if (!start) return;
+    enqueue(key, async () => {
+        await prisma.flowRun.updateMany({ where: { sessionId: opts.dbSessionId, contactJid: opts.jid, status: { in: ACTIVE } }, data: { status: "CANCELLED", wait: Prisma.DbNull, resumeAt: null } });
+        await startRun({ flowId: start.flowId, graph: start.graph, dbSessionId: opts.dbSessionId, sessionId: opts.sessionId, jid: opts.jid, isTest: isSimJid(opts.jid), startNodeId: start.nodeId });
+    }).catch(e => logger.error("Flow", "external start failed", e));
 }
 
 async function handleInput(ctx: Ctx, msg: IncomingMessage) {
@@ -510,6 +548,43 @@ export function onIncomingMessage(sessionId: string, dbSessionId: string, msg: I
         logger.info("Flow", `Starting flow "${hit.f.name}" for ${jid}`);
         await startRun({ flowId: hit.f.id, graph: hit.f.publishedGraph as unknown as FlowGraph, dbSessionId, sessionId, jid, keyId: msg.keyId, text });
     }).catch(e => logger.error("Flow", "incoming handler failed", e));
+}
+
+/** Option index chosen in a vote, or null when it can't be decrypted or the vote was withdrawn. */
+export function readPollVote(vote: { encPayload?: Uint8Array | null; encIv?: Uint8Array | null }, poll: PollRef, voters: string[]): number | null {
+    if (!vote.encPayload || !vote.encIv) return null;
+    const enc = { encPayload: vote.encPayload, encIv: vote.encIv };
+    for (const pollCreatorJid of poll.creators) for (const voterJid of voters) {
+        try {
+            const { selectedOptions } = decryptPollVote(enc, { pollCreatorJid, pollMsgId: poll.id, pollEncKey: Buffer.from(poll.secret, "base64"), voterJid });
+            const hash = selectedOptions?.[0] ? Buffer.from(selectedOptions[0]).toString("hex") : null;
+            const i = hash ? poll.values.findIndex(v => crypto.createHash("sha256").update(v).digest("hex") === hash) : -1;
+            return i >= 0 ? i : null;
+        } catch { /* wrong jid pair: GCM auth fails, try the next */ }
+    }
+    return null;
+}
+
+/** Called by the message store for an incoming poll vote: a tap on a Menu block sent as a poll. */
+export function onPollVote(sessionId: string, dbSessionId: string, msg: Pick<WAMessage, "key" | "message">) {
+    const upd = normalizeMessageContent(msg.message)?.pollUpdateMessage;
+    const pollId = upd?.pollCreationMessageKey?.id;
+    const raw = msg.key.remoteJid;
+    if (!upd?.vote || !pollId || msg.key.fromMe || !raw || raw.endsWith("@g.us")) return;
+    const alt = (msg.key as { remoteJidAlt?: string }).remoteJidAlt;
+    return (async () => {
+        const jid = isLidJid(raw) ? await resolveToPhoneJid(raw, dbSessionId, alt) : raw; // runs are keyed like the store keys messages
+        await enqueue(`${dbSessionId}:${jid}`, async () => {
+            const active = await prisma.flowRun.findFirst({ where: { sessionId: dbSessionId, contactJid: jid, status: "WAITING_INPUT" }, orderBy: { startedAt: "desc" } });
+            const poll = (active?.wait as Wait | null)?.kind === "menu" ? (active!.wait as { poll?: PollRef }).poll : undefined;
+            if (!active || poll?.id !== pollId) return; // vote on an old poll or on a poll sent by hand
+            const voters = [...new Set([raw, alt, jid, isSimJid(jid) ? jid : null].filter((j): j is string => !!j))];
+            const i = readPollVote(upd.vote!, poll, voters);
+            if (i === null) return logger.warn("Flow", `poll vote on run ${active.id} could not be read or was withdrawn`);
+            const keyId = msg.key.id || `POLL${Date.now()}`;
+            await handleInput(await loadCtx(active, sessionId, poll.values[i]), { remoteJid: jid, keyId, fromMe: false, type: "TEXT", content: String(i + 1), mediaUrl: null });
+        });
+    })().catch(e => logger.error("Flow", "poll vote handler failed", e));
 }
 
 /** Auto-reply must stay quiet while a flow owns the conversation or would start from this text. */

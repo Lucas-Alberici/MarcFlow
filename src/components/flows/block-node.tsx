@@ -120,11 +120,14 @@ function Body({ node, color }: { node: FlowNode; color: string }) {
                         <div className="py-1"><b className="text-sm" style={{ color }}>{sent}</b><p className="text-[9px] text-muted-foreground">Enviado</p></div>
                         <div className="border-l py-1" style={{ borderColor: `${color}33` }}><b className="text-sm" style={{ color }}>{sent ? Math.round((clicked / sent) * 100) : 0}%</b><p className="text-[9px] text-muted-foreground">Respondido</p></div>
                     </div>
-                    <div className="mr-3 text-[12px]">{d.question ? <PreviewText text={d.question} className="line-clamp-3 whitespace-pre-wrap" /> : empty("Escreva a pergunta")}</div>
+                    <div className="mr-3 text-[12px]">
+                        {d.mode === "poll" && <span className="mb-1 inline-block rounded px-1.5 text-[10px] font-semibold" style={{ background: `${color}18`, color }}>📊 Enquete</span>}
+                        {d.question ? <PreviewText text={d.question} className="line-clamp-3 whitespace-pre-wrap" /> : empty("Escreva a pergunta")}
+                    </div>
                     {d.options.map((o, i) => (
                         <div key={o.id} className="mr-0 rounded-l-md py-1 pl-2" style={{ background: `${color}12` }}>
                             <OutRow id={`option:${o.id}`}>
-                                <span className="mr-auto text-[12px]"><b style={{ color }}>{i + 1}.</b> {o.text || empty("Resposta")}</span>
+                                <span className="mr-auto text-[12px]"><b style={{ color }}>{d.mode === "poll" ? "○" : `${i + 1}.`}</b> {o.text || empty("Resposta")}</span>
                                 <span className="ml-2 rounded bg-background px-1 text-[9px] text-muted-foreground">{sent ? Math.round((stat(node.id, `option:${o.id}`) / sent) * 100) : 0}%</span>
                             </OutRow>
                         </div>

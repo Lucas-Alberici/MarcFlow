@@ -1,4 +1,4 @@
-import { onIncomingMessage } from "@/modules/flows/engine";
+import { onIncomingMessage, onPollVote } from "@/modules/flows/engine";
 import { trackUnread } from "./chat-state";
 import { isMe, myJids } from "../group-admin";
 import { prisma } from "@/lib/prisma";
@@ -76,7 +76,9 @@ export const bindSessionStore = (sock: WASocket, sessionId: string, io: Server |
                     // Run in background, don't await strictly to not block saving
                     handleBotCommand(sock, sessionId, msg).catch(e => logger.error("Bot", "Bot Handler Error", e));
                     // Conversation flows (only here: this is the one place that knows the message is new)
-                    onIncomingMessage(sessionId, dbSessionId, savedMessage as any);
+                    // a poll vote is saved as an empty text: give flows the decrypted choice instead
+                    if (normalizeMessageContent(msg.message)?.pollUpdateMessage) onPollVote(sessionId, dbSessionId, msg);
+                    else onIncomingMessage(sessionId, dbSessionId, savedMessage as any);
                     trackUnread(dbSessionId, (savedMessage as any).remoteJid, !!(savedMessage as any).fromMe);
                 }
             } catch (error) {

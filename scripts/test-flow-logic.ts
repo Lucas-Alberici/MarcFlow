@@ -58,9 +58,10 @@ const g: FlowGraph = {
         { id: "start", type: "start", position: { x: 0, y: 0 }, data: {} },
         { id: "m", type: "menu", position: { x: 1, y: 0 }, data: { question: "Escolha", invalidText: "x", maxErrors: 2, options: [{ id: "o1", text: "A" }], expireValue: 1, expireUnit: "days" } },
     ],
-    edges: [{ id: "e", source: "start", sourceHandle: "next", target: "m" }],
+    edges: [{ id: "e", source: "start", sourceHandle: "next", target: "m" }, { id: "e2", source: "m", sourceHandle: "option:o1", target: "m" }],
 };
 assert.equal(validateGraph(g).filter(i => i.level === "error").length, 0);
+assert.ok(validateGraph({ ...g, edges: g.edges.slice(0, 1) }).some(i => i.level === "error" && /sem caminho conectado/.test(i.message)), "resposta solta bloqueia a ativação");
 assert.deepEqual(outputsOf(g.nodes[1]).map(o => o.id), ["option:o1", "error", "timeout"]);
 
 // Whole-word matching ("Oi" trigger and intent lists)
