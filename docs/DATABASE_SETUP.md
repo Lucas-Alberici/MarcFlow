@@ -18,7 +18,7 @@ MarcFlow menyertakan `docker-compose.yml` di root project yang mendefinisikan co
    ```bash
    cp .env.example .env
    ```
-   Edit `.env` — isi `AUTH_SECRET`, `MYSQL_ROOT_PASSWORD`, `ADMIN_PASSWORD`, dan `NEXT_PUBLIC_SWAGGER_PASSWORD` dengan nilai yang kuat.
+   Edit `.env` — configure a unique `AUTH_SECRET`, database credentials and administrator credentials. Keep the interactive Swagger UI disabled unless it is needed.
 
 2. **Jalankan Stack**:
    ```bash

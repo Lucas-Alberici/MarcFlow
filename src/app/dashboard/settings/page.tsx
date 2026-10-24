@@ -8,13 +8,14 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RefreshCw, Save, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { BRAND_NAME, getBrandName } from "@/config/brand";
 
 export default function SettingsPage() {
     const { data: authSession } = useSession();
     const isSuperAdmin = (authSession?.user as any)?.role === "SUPERADMIN";
 
     const [systemConfig, setSystemConfig] = useState({
-        appName: "MarcFlow",
+        appName: BRAND_NAME,
         logoUrl: "",
         timezone: "Asia/Jakarta",
         enableRegistration: true
@@ -44,7 +45,7 @@ export default function SettingsPage() {
                 const data = responseData?.data;
                 if (data && !responseData.error) {
                     setSystemConfig({
-                        appName: data.appName || "MarcFlow",
+                        appName: getBrandName(data.appName),
                         logoUrl: data.logoUrl || "",
                         // @ts-ignore
                         faviconUrl: data.faviconUrl || "/favicon.ico",
@@ -115,7 +116,7 @@ export default function SettingsPage() {
                             <Label>Nome do aplicativo</Label>
                             <input
                                 className={inputClass}
-                                placeholder="MarcFlow"
+                                placeholder={BRAND_NAME}
                                 value={systemConfig.appName}
                                 onChange={(e) => setSystemConfig(prev => ({ ...prev, appName: e.target.value }))}
                                 disabled={!isSuperAdmin}

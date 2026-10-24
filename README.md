@@ -1,16 +1,18 @@
 <div align="center">
 
-# MarcFlow
+# M7 Connect
 
-**Automação de WhatsApp com fluxos visuais, campanhas, grupos e respostas rápidas.**
+**Painel e automação de WhatsApp com fluxos visuais, campanhas, grupos e respostas rápidas.**
 
-Criado por **Marcos Maia** · [@marcolamaia](https://instagram.com/marcolamaia)
+Marca e identidade visual: **M7 Connect** · [@eumsml7](https://instagram.com/eumsml7)
+
+Este produto é baseado no [MarcFlow](https://github.com/marcolamaia/MarcFlow), criado por **Marcos Maia**. A licença MIT e os créditos do projeto original são preservados.
 
 </div>
 
 ---
 
-## O que o MarcFlow faz
+## O que o M7 Connect faz
 
 - **Fluxos de conversa:** construtor visual com mensagens, menus, condições, ações, atrasos e etiquetas. Inclui simulador para testar o rascunho sem enviar nada pelo WhatsApp.
 - **Transmissões:** campanhas com variáveis, mídia, agendamento, intervalo entre envios, pausa e lista de quem pediu para sair.
@@ -73,12 +75,12 @@ docker compose up -d
 - Variáveis de ambiente: [docs/ENVIRONMENT_VARIABLES.md](docs/ENVIRONMENT_VARIABLES.md)
 - Swagger UI interativo: `/docs` com o app rodando
 
-## Licença
+## Créditos e licença
 
-MIT. Veja [LICENSE](LICENSE).
+O código derivado permanece sob licença MIT. Veja [LICENSE](LICENSE) e mantenha os avisos de copyright e licença ao redistribuir.
 
 ---
 
 <div align="center">
-  Feito por <a href="https://instagram.com/marcolamaia">Marcos Maia</a>
+  M7 Connect · <a href="https://instagram.com/eumsml7">@eumsml7</a>
 </div>

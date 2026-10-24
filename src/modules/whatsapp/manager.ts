@@ -33,7 +33,7 @@ export class WhatsAppManager {
         if (!this.io) throw new Error("Socket.IO not initialized in WhatsAppManager");
         const sessions = await prisma.session.findMany({
             where: {
-                status: { not: "LOGGED_OUT" }
+                status: { in: ["CONNECTED", "DISCONNECTED"] }
             },
             select: { sessionId: true, userId: true, status: true }
         });

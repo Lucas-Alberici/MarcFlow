@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Scale } from "lucide-react";
+import { BRAND_NAME, UPSTREAM_ATTRIBUTION } from "@/config/brand";
 
 export const metadata = {
-    title: "Termos de Serviço | MarcFlow",
-    description: "Termos de Serviço do MarcFlow, gateway de WhatsApp auto-hospedado. Diretrizes de uso, requisitos de segurança e política de uso aceitável.",
+    title: `Termos de Serviço | ${BRAND_NAME}`,
+    description: `Termos de uso do ${BRAND_NAME}.`,
     openGraph: {
-        title: "Termos de Serviço | MarcFlow",
-        description: "Termos de Serviço do MarcFlow, gateway de WhatsApp auto-hospedado.",
+        title: `Termos de Serviço | ${BRAND_NAME}`,
+        description: `Termos de uso do ${BRAND_NAME}.`,
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "Termos de Serviço | MarcFlow",
-        description: "Termos de Serviço do MarcFlow, gateway de WhatsApp auto-hospedado.",
+        title: `Termos de Serviço | ${BRAND_NAME}`,
+        description: `Termos de uso do ${BRAND_NAME}.`,
     },
 };
 
@@ -44,7 +45,7 @@ export default function TermsPage() {
                     <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed">
 
                         <p className="lead text-lg text-muted-foreground mb-8">
-                            Bem-vindo ao MarcFlow. Ao acessar ou usar nossa plataforma de gateway de WhatsApp, você concorda em ficar vinculado a estes Termos. Se não concordar, não use o serviço.
+                            Bem-vindo ao {BRAND_NAME}. Estes termos descrevem regras gerais de uso da aplicação. O operador deve revisá-los e complementá-los antes de oferecer o serviço ao público.
                         </p>
 
                         <h2 className="flex items-center gap-2 mt-8 text-2xl border-b pb-2">
@@ -52,11 +53,11 @@ export default function TermsPage() {
                             1. Segurança dos dados e responsabilidade
                         </h2>
                         <p>
-                            A segurança está no centro do nosso serviço. Como plataforma auto-hospedada, o MarcFlow garante que seus dados permaneçam estritamente dentro da sua própria infraestrutura.
+                            A instalação pode ser local ou hospedada por um operador. O operador é responsável por informar como os dados são tratados, proteger a infraestrutura e cumprir as obrigações legais aplicáveis.
                         </p>
                         <ul>
-                            <li><strong>Seus dados são seus:</strong> não rastreamos, interceptamos nem vendemos suas mensagens de WhatsApp, listas de contatos ou dados de sessão. Suas informações ficam seguras e não são usadas indevidamente.</li>
-                            <li><strong>Uso seguro:</strong> você é responsável por garantir que seu hardware e seus ambientes de servidor estejam devidamente protegidos.</li>
+                            <li><strong>Uso seguro:</strong> proteja suas credenciais e use o sistema apenas em ambientes autorizados.</li>
+                            <li><strong>Dados:</strong> revise a <Link href="/privacy">Política de Privacidade</Link> e as informações do operador sobre hospedagem e retenção.</li>
                             <li><strong>Autenticação:</strong> você deve proteger as credenciais da sua conta. Não compartilhe seus dados de login com pessoas não autorizadas.</li>
                         </ul>
 
@@ -72,12 +73,12 @@ export default function TermsPage() {
 
                         <h2 className="mt-8 text-2xl border-b pb-2">3. Integridade da conta</h2>
                         <p>
-                            O MarcFlow oferece ferramentas para gerenciar várias sessões de WhatsApp. É fundamental monitorar seus dispositivos ativos. Se suspeitar de acesso não autorizado ao painel do seu gateway, altere sua senha imediatamente e revogue as sessões de WhatsApp conectadas a partir do seu aparelho.
+                            O {BRAND_NAME} oferece ferramentas para gerenciar sessões de WhatsApp. Monitore os dispositivos conectados e revogue acessos suspeitos pelo próprio WhatsApp.
                         </p>
 
                         <h2 className="mt-8 text-2xl border-b pb-2">4. Isenções e limitações</h2>
                         <p>
-                            O MarcFlow é fornecido "como está", sem garantias de qualquer tipo. Usamos bibliotecas de terceiros (como o Baileys) para nos conectar aos protocolos do WhatsApp Web. Mudanças nos sistemas internos do WhatsApp podem, ocasionalmente, interromper o serviço. Não nos responsabilizamos por suspensões ou banimentos de conta aplicados pelo WhatsApp em decorrência do seu uso.
+                            A aplicação depende de bibliotecas e serviços de terceiros, cujas mudanças podem afetar a disponibilidade. O usuário deve respeitar os termos e políticas do WhatsApp; a conexão não oficial pode implicar riscos de interrupção ou restrição da conta. {UPSTREAM_ATTRIBUTION}
                         </p>
 
                         <div className="mt-12 p-6 bg-primary/5 rounded-2xl border border-primary/10">

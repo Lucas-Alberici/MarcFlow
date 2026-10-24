@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 import { TopLoader } from "@/components/ui/top-loader";
 import { prisma } from "@/lib/prisma";
+import { getBrandName } from "@/config/brand";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,11 +29,11 @@ export const viewport: Viewport = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
-  let appName = "MarcFlow";
+  let appName = getBrandName();
   try {
     // @ts-ignore
     const config = await prisma.systemConfig.findUnique({ where: { id: "default" } });
-    if (config?.appName) appName = config.appName;
+    appName = getBrandName(config?.appName);
   } catch (e) {
     console.error("Failed to fetch system config for metadata:", e);
   }

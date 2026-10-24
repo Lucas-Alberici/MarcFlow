@@ -3,13 +3,25 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ReactFlowProvider } from "@xyflow/react";
+import dynamic from "next/dynamic";
 import { Loader2 } from "lucide-react";
 import { useSession } from "@/components/dashboard/session-provider";
 import { SessionGuard } from "@/components/dashboard/session-guard";
 import { Button } from "@/components/ui/button";
-import { FlowEditor, type LoadedFlow } from "@/components/flows/flow-editor";
+import type { LoadedFlow } from "@/components/flows/flow-editor";
 import type { FlowMeta } from "@/components/flows/editor-context";
+
+const FlowEditorCanvas = dynamic(
+    () => import("@/components/flows/flow-editor-canvas").then(module => module.FlowEditorCanvas),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="flex h-full items-center justify-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" />Carregando o editor...
+            </div>
+        ),
+    },
+);
 
 export default function FlowEditorPage() {
     const { flowId } = useParams<{ flowId: string }>();
@@ -44,9 +56,7 @@ export default function FlowEditorPage() {
             ) : !flow || !meta || !sessionId ? (
                 <div className="flex h-full items-center justify-center gap-2 text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Carregando o fluxo...</div>
             ) : (
-                <ReactFlowProvider>
-                    <FlowEditor key={flow.id} sessionId={sessionId} initial={flow} initialMeta={meta} />
-                </ReactFlowProvider>
+                <FlowEditorCanvas key={flow.id} sessionId={sessionId} initial={flow} initialMeta={meta} />
             )}
         </SessionGuard>
     );

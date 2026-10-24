@@ -1,4 +1,4 @@
-# 🏗️ MarcFlow Project Architecture & Logic
+# 🏗️ M7 Connect Project Architecture & Logic
 
 > **Version**: 1.6.1  
 > **Last Updated**: June 2026  
@@ -8,7 +8,7 @@
 
 ## 🏗️ System Architecture
 
-MarcFlow is a decoupled system where the WhatsApp engine (Baileys) runs as a core service, integrated into a Next.js App Router environment.
+M7 Connect is based on MarcFlow. Its current WhatsApp engine (Baileys) runs as a persistent service integrated into a Next.js App Router environment; this architecture is not yet suitable for direct deployment as stateless serverless functions.
 
 ```mermaid
 graph TD

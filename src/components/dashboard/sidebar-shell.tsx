@@ -5,7 +5,8 @@ import { SidebarNav } from "./sidebar-nav";
 import { useSidebar } from "./sidebar-context";
 import { LogOut, PanelLeftClose, PanelLeft, Settings } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { BRAND_TAGLINE, MarcFlowLogo } from "@/components/brand/marcflow-logo";
+import { M7Logo } from "@/components/brand/m7-logo";
+import { BRAND_TAGLINE } from "@/config/brand";
 
 interface SidebarShellProps {
     appName: string;
@@ -29,7 +30,7 @@ export function SidebarShell({ appName, userName, userEmail, version }: SidebarS
         >
             {/* Logo / Brand */}
             <div className={`group relative flex items-center transition-all duration-300 ${isCollapsed ? "justify-center px-3 py-6" : "gap-3 px-6 py-6"}`}>
-                <MarcFlowLogo className="h-11 w-11 shrink-0" />
+                <M7Logo className="h-11 w-11 shrink-0" />
                 {!isCollapsed && (
                     <div className="min-w-0">
                         <h1 className="text-[22px] font-bold leading-tight tracking-tight text-white">{appName}</h1>

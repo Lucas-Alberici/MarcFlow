@@ -83,7 +83,7 @@ Check the **Settings** page to customize:
 - **Role-Based Access**: `SUPERADMIN` (full access), `OWNER` (manage own sessions), `STAFF` (limited).
 - **Session Sharing**: OWNER bisa share session ke STAFF tanpa memberikan akses delete.
 - **Password**: Semua password di-hash dengan bcrypt. Tidak ada fallback ke plaintext.
-- **Swagger UI**: Ubah default password (`NEXT_PUBLIC_SWAGGER_PASSWORD`) di `.env` sebelum production.
+- **Swagger UI**: Disabled by default. If enabled with `NEXT_PUBLIC_SWAGGER_ENABLED=true`, sign in with an application account; the OpenAPI spec endpoint also requires authentication.
 
 ---
 <div align="center">

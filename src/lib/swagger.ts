@@ -7,13 +7,13 @@ export const getApiDocs = () => {
         definition: {
             openapi: "3.0.0",
             info: {
-                title: "MarcFlow API",
+                title: "M7 Connect API",
                 version: "1.0.0",
-                contact: { name: "Marcos Maia (@marcolamaia)", url: "https://instagram.com/marcolamaia" },
+                contact: { name: "M7 Connect · @eumsml7", url: "https://instagram.com/eumsml7" },
                 description: `
-# MarcFlow - Complete API Reference
+# M7 Connect - API Reference
 
-Created by **Marcos Maia** ([@marcolamaia](https://instagram.com/marcolamaia)).
+Based on **MarcFlow**, created by **Marcos Maia** ([@marcolamaia](https://instagram.com/marcolamaia)).
 
 Professional WhatsApp Gateway with **93 API endpoints** for complete WhatsApp automation.
 
@@ -4422,4 +4422,3 @@ All endpoints require authentication via:
     });
     return spec;
 };
-

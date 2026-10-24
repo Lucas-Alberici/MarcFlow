@@ -1,6 +1,6 @@
 "use client";
 
-import { BRAND_TAGLINE, MarcFlowLogo } from "@/components/brand/marcflow-logo";
+import { BRAND_TAGLINE } from "@/config/brand";
 
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
@@ -34,6 +34,8 @@ import {
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import pkg from "../../../package.json";
+import { BRAND_NAME } from "@/config/brand";
+import { M7Logo } from "@/components/brand/m7-logo";
 
 interface NavGroup {
     label: string;
@@ -97,7 +99,7 @@ const navGroups: NavGroup[] = [
     },
 ];
 
-export function MobileNav({ appName = "MarcFlow" }: { appName?: string }) {
+export function MobileNav({ appName = BRAND_NAME }: { appName?: string }) {
     const [open, setOpen] = useState(false);
     const pathname = usePathname();
     const { data: session } = useSession();
@@ -118,7 +120,7 @@ export function MobileNav({ appName = "MarcFlow" }: { appName?: string }) {
             </SheetTrigger>
             <SheetContent side="left" className="w-[85vw] sm:w-[320px] p-0 flex flex-col">
                 <SheetHeader className="flex-row items-center gap-3 px-5 py-4 text-left border-b border-slate-100">
-                    <MarcFlowLogo className="h-10 w-10 shrink-0" />
+                    <M7Logo className="h-10 w-10 shrink-0" />
                     <div>
                         <SheetTitle className="text-xl font-bold text-slate-800">{appName}</SheetTitle>
                         <SheetDescription className="text-[11px] text-slate-400">{BRAND_TAGLINE}</SheetDescription>

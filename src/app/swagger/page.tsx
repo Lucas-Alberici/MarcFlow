@@ -1,22 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-import { ArrowRight, Braces, Eye, EyeOff, Info, Lock, User } from "lucide-react";
-import { MarcFlowLogo } from "@/components/brand/marcflow-logo";
-
-// The hint box only ever shows the public defaults: custom credentials are never displayed
-const USING_DEFAULT_CREDENTIALS = (process.env.NEXT_PUBLIC_SWAGGER_USERNAME || "admin") === "admin"
-    && (process.env.NEXT_PUBLIC_SWAGGER_PASSWORD || "admin123") === "admin123";
+import { ArrowRight, Braces, Eye, EyeOff, Lock, User } from "lucide-react";
+import { M7Logo } from "@/components/brand/m7-logo";
+import { BRAND_NAME, BRAND_TAGLINE, UPSTREAM_URL } from "@/config/brand";
+import Link from "next/link";
 
 export default function ApiDocsPage() {
-    const [authorized, setAuthorized] = useState(false);
-    const [loading, setLoading] = useState(true);
+    const { status, update } = useSession();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const swaggerEnabled = process.env.NEXT_PUBLIC_SWAGGER_ENABLED === "true";
 
     useEffect(() => {
         // Suppress Swagger UI legacy lifecycle warnings (ModelCollapse)
@@ -30,42 +29,48 @@ export default function ApiDocsPage() {
             originalWarn(...args);
         };
 
-        // Check if already authorized via session storage
-        const isAuth = sessionStorage.getItem("swagger_auth") === "true";
-        if (isAuth) {
-            setAuthorized(true);
-        }
-        setLoading(false);
-
         return () => {
             console.warn = originalWarn;
         };
     }, []);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Basic auth - compare with env variables or hardcoded (for demo)
-        const validUsername = process.env.NEXT_PUBLIC_SWAGGER_USERNAME || "admin";
-        const validPassword = process.env.NEXT_PUBLIC_SWAGGER_PASSWORD || "admin123";
-
-        if (username === validUsername && password === validPassword) {
-            sessionStorage.setItem("swagger_auth", "true");
-            setAuthorized(true);
-            setError("");
-        } else {
-            setError("Credenciais inválidas");
+        setError("");
+        try {
+            const result = await signIn("credentials", {
+                redirect: false,
+                email: username,
+                password,
+            });
+            if (!result?.ok) {
+                setError("E-mail ou senha inválidos");
+                return;
+            }
+            await update();
+        } catch {
+            setError("Não foi possível autenticar. Tente novamente.");
         }
     };
 
-    const handleLogout = () => {
-        sessionStorage.removeItem("swagger_auth");
-        setAuthorized(false);
+    const handleLogout = async () => {
+        await signOut({ redirect: false });
         setUsername("");
         setPassword("");
     };
 
-    if (loading) {
+    if (!swaggerEnabled) {
+        return (
+            <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#0B111C] px-6 text-center text-slate-100">
+                <M7Logo className="h-14 w-14" />
+                <h1 className="text-2xl font-bold">Documentação interativa desativada</h1>
+                <p className="max-w-lg text-slate-400">O Swagger está desativado nesta instalação. Consulte a documentação pública ou fale com o administrador.</p>
+                <Link href="/docs" className="text-blue-300 underline underline-offset-4">Abrir documentação</Link>
+            </div>
+        );
+    }
+
+    if (status === "loading") {
         return (
             <div className="flex items-center justify-center min-h-screen bg-gray-50">
                 <div className="text-gray-600">Carregando...</div>
@@ -73,7 +78,7 @@ export default function ApiDocsPage() {
         );
     }
 
-    if (!authorized) {
+    if (status !== "authenticated") {
         return (
             <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#0B111C] text-slate-100">
                 {/* subtle grid */}
@@ -83,15 +88,15 @@ export default function ApiDocsPage() {
                 <main className="relative mx-auto grid w-full max-w-7xl flex-1 items-center gap-12 px-4 py-10 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:py-16">
                     <section className="space-y-8">
                         <div className="flex items-center gap-3">
-                            <MarcFlowLogo className="h-11 w-11" />
-                            <span className="text-2xl font-semibold tracking-tight sm:text-3xl">MarcFlow</span>
+                            <M7Logo className="h-11 w-11" />
+                            <span className="text-2xl font-semibold tracking-tight sm:text-3xl">{BRAND_NAME}</span>
                             <span className="rounded-md border border-blue-500/70 px-2 py-0.5 text-sm font-medium text-blue-400">API</span>
                         </div>
                         <div className="space-y-4">
                             <h1 className="text-4xl font-bold leading-[1.08] tracking-tight sm:text-5xl xl:text-6xl">
                                 Suas integrações.<br />Novas possibilidades.
                             </h1>
-                            <p className="max-w-xl text-base text-slate-400 sm:text-lg">Acesse a documentação e conecte suas aplicações ao MarcFlow.</p>
+                            <p className="max-w-xl text-base text-slate-400 sm:text-lg">Acesse a documentação e conecte suas aplicações ao {BRAND_NAME}.</p>
                         </div>
                         <div className="hidden max-w-xl overflow-hidden rounded-2xl border border-slate-700/60 bg-slate-900/60 shadow-2xl sm:block">
                             <div className="flex items-center justify-between border-b border-slate-700/60 px-4 py-3">
@@ -126,11 +131,11 @@ export default function ApiDocsPage() {
                         </div>
                         <form onSubmit={handleLogin} className="space-y-5">
                             <label className="block space-y-2">
-                                <span className="text-sm font-medium text-slate-200">Usuário</span>
+                                <span className="text-sm font-medium text-slate-200">E-mail</span>
                                 <span className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-950/40 px-4 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/30">
                                     <User className="h-5 w-5 shrink-0 text-slate-400" />
-                                    <input type="text" value={username} onChange={e => setUsername(e.target.value)} autoComplete="username" required
-                                        className="h-12 w-full bg-transparent text-slate-100 outline-none placeholder:text-slate-500" placeholder="Digite seu usuário" />
+                                    <input type="email" value={username} onChange={e => setUsername(e.target.value)} autoComplete="email" required
+                                        className="h-12 w-full bg-transparent text-slate-100 outline-none placeholder:text-slate-500" placeholder="Digite seu e-mail" />
                                 </span>
                             </label>
                             <label className="block space-y-2">
@@ -152,23 +157,11 @@ export default function ApiDocsPage() {
                             </button>
                         </form>
 
-                        {USING_DEFAULT_CREDENTIALS && (
-                            <div className="mt-6 flex gap-4 rounded-xl border border-blue-500/50 bg-blue-500/10 p-5">
-                                <Info className="mt-0.5 h-6 w-6 shrink-0 text-blue-400" />
-                                <div className="space-y-2">
-                                    <p className="font-semibold">Credenciais de acesso</p>
-                                    <p className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-1 text-slate-300">
-                                        <span>Usuário:</span><code className="font-semibold text-blue-300">admin</code>
-                                        <span>Senha:</span><code className="font-semibold text-blue-300">admin123</code>
-                                    </p>
-                                </div>
-                            </div>
-                        )}
                     </section>
                 </main>
 
                 <footer className="relative mx-auto w-full max-w-7xl px-4 pb-8 text-sm text-slate-500 sm:px-8">
-                    Desenvolvido por Marcos Maia · <a href="https://instagram.com/marcolamaia" target="_blank" rel="noopener noreferrer" className="hover:text-slate-300">@marcolamaia</a>
+                    {BRAND_TAGLINE} · baseado no <a href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer" className="hover:text-slate-300">MarcFlow, de Marcos Maia</a>
                 </footer>
             </div>
         );
@@ -179,9 +172,9 @@ export default function ApiDocsPage() {
             <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 shadow-lg">
                 <div className="container mx-auto flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-bold">Documentação da API do MarcFlow</h1>
+                        <h1 className="text-2xl font-bold">Documentação da API do {BRAND_NAME}</h1>
                         <p className="text-blue-100 text-sm mt-1">
-                            Documentação interativa da API · criado por Marcos Maia (@marcolamaia)
+                            Documentação interativa da API · {BRAND_TAGLINE}
                         </p>
                     </div>
                     <button

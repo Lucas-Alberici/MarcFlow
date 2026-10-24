@@ -29,16 +29,12 @@ PORT=$(grep -E "^PORT=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'" | tr -d ' '
 PORT=${PORT:-3000}
 
 AUTH_SEC=$(grep -E "^AUTH_SECRET=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'" | tr -d ' ')
-SWAG_PASS=$(grep -E "^NEXT_PUBLIC_SWAGGER_PASSWORD=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'" | tr -d ' ')
 ADM_PASS=$(grep -E "^ADMIN_PASSWORD=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'" | tr -d ' ')
 ROOT_DB_PASS=$(grep -E "^MYSQL_ROOT_PASSWORD=" .env | cut -d'=' -f2 | tr -d '"' | tr -d "'" | tr -d ' ')
 
 # Security audit check (results will be printed at the end)
 USING_DEFAULTS=0
 if [ "$AUTH_SEC" = "your-super-secret-key-at-least-32-chars-change-this-in-production" ] || [ -z "$AUTH_SEC" ]; then
-    USING_DEFAULTS=1
-fi
-if [ "$SWAG_PASS" = "admin123" ] || [ "$SWAG_PASS" = "change-this-in-production" ]; then
     USING_DEFAULTS=1
 fi
 if [ "$ADM_PASS" = "change-this-in-production" ]; then

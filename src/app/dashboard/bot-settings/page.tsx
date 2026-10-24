@@ -19,12 +19,13 @@ import {
 import { RefreshCw, Save, AlertCircle, Bot, X, Plus, ShieldCheck, Zap, UserCheck, MessageSquarePlus } from "lucide-react";
 import { toast } from "sonner";
 import { SessionGuard } from "@/components/dashboard/session-guard";
+import { BRAND_NAME } from "@/config/brand";
 
 export default function BotSettingsPage() {
     const { sessionId } = useSessionProvider();
 
     const [botConfig, setBotConfig] = useState({
-        botName: "MarcFlow Bot",
+        botName: `${BRAND_NAME} Bot`,
         prefix: "#",
         enableSticker: true,
         enableVideoSticker: true,

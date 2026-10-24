@@ -1,4 +1,7 @@
-import { loadEnvConfig } from "@next/env";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { loadEnvConfig } = require("@next/env") as typeof import("@next/env");
 // Load environment variables before any other imports/logic
 loadEnvConfig(process.cwd());
 
@@ -64,7 +67,7 @@ app.prepare().then(() => {
   server.keepAliveTimeout = 120 * 1000; // 120 seconds
   server.headersTimeout = 120 * 1000; // 120 seconds
 
-  server.listen(port, () => {
+  server.listen(port, hostname, () => {
     logger.banner(pkg.name.toUpperCase(), pkg.version, port);
 
   });

@@ -1,34 +1,28 @@
 import Link from "next/link";
-import { ArrowRight, Bot, Instagram, Zap, Shield, Globe, MessageSquare, Clock, Code, ChevronRight } from "lucide-react";
+import { ArrowRight, Instagram, Zap, Shield, Globe, MessageSquare, Clock, Code, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import fs from "fs";
-import path from "path";
+import { BRAND_INSTAGRAM_URL, BRAND_NAME, BRAND_TAGLINE, UPSTREAM_ATTRIBUTION, UPSTREAM_URL } from "@/config/brand";
+import { M7Logo } from "@/components/brand/m7-logo";
+import pkg from "../../package.json";
 
 export const metadata = {
-  title: "MarcFlow | Gateway de WhatsApp Premium",
-  description: "Um painel poderoso e auto-hospedado para gerenciar suas sessões de WhatsApp, agendamentos e respostas automáticas. Feito para empresas modernas.",
+  title: `${BRAND_NAME} | Operações WhatsApp`,
+  description: "Um painel para centralizar sessões, conversas, automações e operações do WhatsApp.",
   openGraph: {
-    title: "MarcFlow | Gateway de WhatsApp Premium",
-    description: "Gateway de WhatsApp auto-hospedado com suporte a múltiplos dispositivos, respostas automáticas e integração via API.",
+    title: `${BRAND_NAME} | Operações WhatsApp`,
+    description: "Centralize sessões, conversas, automações e operações do WhatsApp em um painel.",
     type: "website",
     url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3030",
   },
   twitter: {
     card: "summary_large_image",
-    title: "MarcFlow | Gateway de WhatsApp Premium",
-    description: "Gateway de WhatsApp auto-hospedado com suporte a múltiplos dispositivos, respostas automáticas e integração via API.",
+    title: `${BRAND_NAME} | Operações WhatsApp`,
+    description: "Centralize sessões, conversas, automações e operações do WhatsApp em um painel.",
   },
 };
 
 export default function Home() {
-  const packagePath = path.join(process.cwd(), "package.json");
-  let version = "v1.2.0";
-  try {
-    const packageJson = JSON.parse(fs.readFileSync(packagePath, "utf8"));
-    version = `v${packageJson.version}`;
-  } catch (error) {
-    console.error("Failed to read package.json", error);
-  }
+  const version = `v${pkg.version}`;
 
   return (
     <div className="flex min-h-screen flex-col overflow-hidden selection:bg-primary/30 selection:text-primary-foreground">
@@ -37,17 +31,17 @@ export default function Home() {
         <div className="glass rounded-full px-4 md:px-8 h-14 md:h-16 flex items-center justify-between mx-auto shadow-lg shadow-black/5 dark:shadow-black/20 border border-white/40 dark:border-white/10">
           <div className="flex items-center gap-3 font-bold text-xl">
             <div className="relative flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-primary text-white shadow-inner">
-              <Bot className="h-5 w-5 md:h-6 md:w-6" />
+              <M7Logo className="h-8 w-8 md:h-10 md:w-10" />
               <div className="absolute inset-0 rounded-full bg-primary blur-md -z-10 opacity-50 animate-pulse-glow" />
             </div>
-            <span className="text-foreground tracking-tight hidden sm:inline-block">MarcFlow</span>
+            <span className="text-foreground tracking-tight hidden sm:inline-block">{BRAND_NAME}</span>
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
             <Link href="#features" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Recursos</Link>
             <Link href="/docs" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">API e documentação</Link>
-            <Link href="https://instagram.com/marcolamaia" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-              <Instagram className="h-4 w-4" /> @marcolamaia
+            <Link href={BRAND_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <Instagram className="h-4 w-4" /> @eumsml7
             </Link>
           </nav>
 
@@ -87,11 +81,11 @@ export default function Home() {
 
               <div className="space-y-6">
                 <h1 className="text-5xl font-extrabold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl w-full">
-                  <span className="block text-foreground pb-2">Gateway de WhatsApp</span>
-                  <span className="text-gradient block pb-2">de nova geração.</span>
+                  <span className="block text-foreground pb-2">WhatsApp no seu ritmo.</span>
+                  <span className="text-gradient block pb-2">Operação sob controle.</span>
                 </h1>
                 <p className="mx-auto max-w-[42rem] text-muted-foreground text-lg sm:text-xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-150">
-                  A solução open source completa para gerenciar sessões de WhatsApp, orquestrar respostas automáticas inteligentes e integrar por meio de uma API REST robusta.
+                  {BRAND_NAME} reúne conversas, sessões e automações em uma experiência feita para a sua operação.
                 </p>
               </div>
 
@@ -178,17 +172,18 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-primary/10">
-                <Bot className="h-6 w-6 text-primary" />
+                <M7Logo className="h-8 w-8" />
               </div>
-              <span className="text-xl font-bold text-foreground">MarcFlow</span>
+              <span className="text-xl font-bold text-foreground">{BRAND_NAME}</span>
             </div>
             <div className="flex gap-8 text-sm font-medium">
               <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">Privacidade</Link>
               <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">Termos</Link>
-              <Link href="https://instagram.com/marcolamaia" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">Instagram</Link>
+              <Link href={BRAND_INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">@eumsml7</Link>
             </div>
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} MarcFlow · criado por Marcos Maia (@marcolamaia). Distribuído sob licença MIT.
+            <p className="text-sm text-muted-foreground text-center md:text-right">
+              © {new Date().getFullYear()} {BRAND_NAME} · {BRAND_TAGLINE}. {UPSTREAM_ATTRIBUTION}{" "}
+              <Link href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">Projeto original</Link>
             </p>
           </div>
         </div>

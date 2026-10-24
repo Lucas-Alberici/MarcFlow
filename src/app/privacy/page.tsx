@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { ArrowLeft, Lock, Shield } from "lucide-react";
+import { BRAND_INSTAGRAM_URL, BRAND_NAME, UPSTREAM_ATTRIBUTION } from "@/config/brand";
 
 export const metadata = {
-    title: "Política de Privacidade | MarcFlow",
-    description: "Política de Privacidade do MarcFlow, gateway de WhatsApp auto-hospedado. Arquitetura sem rastreamento, propriedade dos dados e práticas de segurança.",
+    title: `Política de Privacidade | ${BRAND_NAME}`,
+    description: `Informações sobre o tratamento de dados no ${BRAND_NAME}.`,
     openGraph: {
-        title: "Política de Privacidade | MarcFlow",
-        description: "Política de Privacidade do MarcFlow, gateway de WhatsApp auto-hospedado.",
+        title: `Política de Privacidade | ${BRAND_NAME}`,
+        description: `Informações sobre o tratamento de dados no ${BRAND_NAME}.`,
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "Política de Privacidade | MarcFlow",
-        description: "Política de Privacidade do MarcFlow, gateway de WhatsApp auto-hospedado.",
+        title: `Política de Privacidade | ${BRAND_NAME}`,
+        description: `Informações sobre o tratamento de dados no ${BRAND_NAME}.`,
     },
 };
 
@@ -44,49 +45,49 @@ export default function PrivacyPage() {
                     <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary hover:prose-a:text-primary/80 prose-p:leading-relaxed">
 
                         <p className="lead text-lg text-muted-foreground mb-8">
-                            No MarcFlow, acreditamos que seus dados são sua propriedade. Esta Política de Privacidade detalha os limites rigorosos sobre como as informações são tratadas ao usar nosso gateway de WhatsApp open source e auto-hospedado.
+                            Esta política descreve os dados tratados pelo {BRAND_NAME}. O local de processamento depende de como e onde a aplicação foi instalada; antes de disponibilizar o serviço publicamente, o responsável pela operação deve preencher os dados de contato e os fornecedores efetivamente utilizados.
                         </p>
 
                         <h2 className="flex items-center gap-2 mt-8 text-2xl border-b pb-2">
                             <Lock className="h-6 w-6 text-blue-500" />
-                            1. Arquitetura sem rastreamento
+                            1. Dados e armazenamento
                         </h2>
                         <p>
-                            Como o MarcFlow foi projetado para ser <strong>auto-hospedado</strong>, todo o processamento principal de dados acontece exclusivamente no hardware em que você instala a aplicação.
+                            O sistema pode processar dados de conta, configurações, mensagens, contatos, arquivos de mídia e credenciais de sessão do WhatsApp para fornecer seus recursos. Em uma instalação local, esses dados são armazenados nos serviços configurados pelo operador. Em uma implantação hospedada, eles também podem ser processados pelo provedor de hospedagem, pelo banco de dados e por outros fornecedores habilitados pelo operador.
                         </p>
                         <ul>
-                            <li><strong>Sem telemetria centralizada:</strong> os criadores do MarcFlow não recebem telemetria, análises nem relatórios de uso sobre as suas interações no WhatsApp.</li>
-                            <li><strong>Propriedade total dos dados:</strong> seus contatos, mensagens, agendamentos e respostas automáticas ficam no seu próprio banco de dados. Não podemos e não vamos acessá-lo.</li>
+                            <li><strong>Credenciais:</strong> as senhas do painel são armazenadas com hash; credenciais de sessão do WhatsApp devem ser tratadas como segredos.</li>
+                            <li><strong>Operação hospedada:</strong> o operador deve informar aos usuários quais provedores, regiões e prazos de retenção são aplicáveis antes de abrir o serviço ao público.</li>
                         </ul>
 
-                        <h2 className="mt-8 text-2xl border-b pb-2">2. Dados que processamos localmente</h2>
+                        <h2 className="mt-8 text-2xl border-b pb-2">2. Serviços de terceiros</h2>
                         <p>
-                            Quando você instala o gateway, a aplicação executada no seu servidor interage com:
+                            O funcionamento pode envolver:
                         </p>
                         <ul>
-                            <li><strong>Credenciais de autenticação:</strong> as senhas que você cria para o painel passam por hash seguro com bcrypt antes de serem armazenadas no seu banco de dados local.</li>
-                            <li><strong>Sessões do WhatsApp:</strong> o MarcFlow funciona como uma ponte para o WhatsApp Web. Os tokens (chaves) de sessão necessários para manter essa conexão são armazenados localmente no seu servidor.</li>
-                            <li><strong>Registros de comunicação:</strong> as mensagens enviadas e recebidas pelo gateway são registradas no seu banco de dados local para fornecer histórico e o funcionamento dos Webhooks.</li>
+                            <li><strong>WhatsApp/Meta:</strong> a biblioteca Baileys estabelece a conexão com o WhatsApp; o uso também está sujeito às políticas da Meta.</li>
+                            <li><strong>Hospedagem e banco:</strong> provedores escolhidos pelo operador podem processar requisições, logs e dados persistidos.</li>
+                            <li><strong>Integrações opcionais:</strong> webhooks e serviços externos configurados pelo operador podem receber os dados enviados a eles.</li>
                         </ul>
 
                         <h2 className="mt-8 text-2xl border-b pb-2">3. Protegendo suas informações</h2>
                         <p>
-                            Embora o MarcFlow seja construído com práticas modernas de segurança, a segurança final dos seus dados depende do seu ambiente de hospedagem. Recomendamos fortemente:
+                            O operador deve proteger a infraestrutura e as credenciais, usar HTTPS, limitar acessos, manter backups protegidos e definir retenção e resposta a incidentes. A conexão de WhatsApp não deve ser habilitada em uma implantação sem armazenamento persistente e proteção adequada dos segredos.
                         </p>
                         <ul>
-                            <li>Instalar a aplicação atrás de um proxy reverso com <strong>criptografia SSL/TLS</strong> obrigatória (HTTPS).</li>
-                            <li>Proteger o servidor com firewalls e autenticação por chave SSH.</li>
-                            <li>Manter o sistema operacional e o ambiente Node.js sempre atualizados.</li>
+                            <li>Usar HTTPS e controles de acesso apropriados.</li>
+                            <li>Armazenar segredos em um gerenciador seguro e limitar privilégios.</li>
+                            <li>Manter backups, atualizações e um prazo de retenção documentado.</li>
                         </ul>
 
                         <h2 className="mt-8 text-2xl border-b pb-2">4. Integrações de terceiros</h2>
                         <p>
-                            O MarcFlow usa a biblioteca <code>@whiskeysockets/baileys</code> para se comunicar diretamente com os servidores do WhatsApp. Ao usar este gateway, seu servidor estabelece uma conexão WebSocket direta com o WhatsApp. Lembre-se de que o seu uso do WhatsApp continua sujeito à Política de Privacidade da Meta.
+                            {BRAND_NAME} usa a biblioteca <code>@whiskeysockets/baileys</code> para se comunicar com o WhatsApp. O processamento no WhatsApp continua sujeito aos termos e à política de privacidade da Meta.
                         </p>
 
                         <div className="mt-12 p-6 bg-blue-500/5 rounded-2xl border border-blue-500/10">
                             <p className="font-semibold mb-2">Precisa de mais detalhes?</p>
-                            <p className="text-sm text-muted-foreground mb-0">Se você tiver dúvidas específicas sobre o tratamento de dados ou quiser auditar o código, fale com o criador do MarcFlow, Marcos Maia, pelo <Link href="https://instagram.com/marcolamaia">Instagram @marcolamaia</Link>.</p>
+                            <p className="text-sm text-muted-foreground mb-0">Contato do projeto: <Link href={BRAND_INSTAGRAM_URL}>Instagram @eumsml7</Link>. {UPSTREAM_ATTRIBUTION}</p>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 {
-  "name": "marcflow",
+  "name": "m7-connect",
   "version": "1.0.0",
-  "description": "MarcFlow — automação de WhatsApp com fluxos, campanhas, grupos e respostas rápidas.",
+  "description": "M7 Connect — painel e automação de WhatsApp.",
   "author": "Marcos Maia (@marcolamaia)",
   "private": false,
   "license": "MIT",

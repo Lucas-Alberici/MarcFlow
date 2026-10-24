@@ -8,6 +8,7 @@ import { RegistrationWarning } from "@/components/dashboard/registration-warning
 import { prisma } from "@/lib/prisma";
 import { Toaster } from "sonner";
 import pkg from "../../../package.json";
+import { getBrandName } from "@/config/brand";
 
 
 export default async function DashboardLayout({
@@ -15,10 +16,12 @@ export default async function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const session = await auth();
-    // @ts-ignore
-    const systemConfig = await prisma.systemConfig.findUnique({ where: { id: "default" } });
-    const appName = systemConfig?.appName || "MarcFlow";
+    const [session, systemConfig] = await Promise.all([
+        auth(),
+        // @ts-ignore
+        prisma.systemConfig.findUnique({ where: { id: "default" } }),
+    ]);
+    const appName = getBrandName(systemConfig?.appName);
     const registrationEnabled = systemConfig?.enableRegistration ?? true;
 
     return (

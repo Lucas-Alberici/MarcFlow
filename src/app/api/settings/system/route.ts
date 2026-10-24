@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser } from "@/lib/api-auth";
+import { BRAND_NAME, getBrandName } from "@/config/brand";
 
 export async function GET(request: NextRequest) {
     try {
@@ -14,7 +15,11 @@ export async function GET(request: NextRequest) {
             where: { id: "default" }
         });
 
-        return NextResponse.json({ status: true, message: "System config fetched", data: config || { appName: "MarcFlow", faviconUrl: "/favicon.ico" } });
+        return NextResponse.json({
+            status: true,
+            message: "System config fetched",
+            data: config ? { ...config, appName: getBrandName(config.appName) } : { appName: BRAND_NAME, faviconUrl: "/icon.svg" },
+        });
     } catch (error) {
         return NextResponse.json({ status: false, message: "Failed to fetch settings", error: "Failed to fetch settings" }, { status: 500 });
     }

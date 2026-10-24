@@ -16,8 +16,10 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Bot, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import Link from 'next/link';
+import { BRAND_NAME } from "@/config/brand";
+import { M7Logo } from "@/components/brand/m7-logo";
 
 const formSchema = z.object({
   email: z.string().email("Informe um e-mail válido"),
@@ -71,10 +73,10 @@ function LoginForm() {
       <div className="relative z-10 w-full max-w-md p-4 animate-in fade-in zoom-in-95 duration-500">
         <div className="flex flex-col items-center mb-8">
           <div className="relative flex h-16 w-16 mb-4 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-primary text-white shadow-lg shadow-primary/30">
-            <Bot className="h-8 w-8" />
+            <M7Logo className="h-12 w-12" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">Bem-vindo de volta</h1>
-          <p className="text-muted-foreground mt-2">Entre na sua conta do MarcFlow</p>
+          <p className="text-muted-foreground mt-2">Entre na sua conta do {BRAND_NAME}</p>
         </div>
 
         <div className="glass-panel rounded-3xl p-8 shadow-2xl shadow-black/5 dark:shadow-black/40">
