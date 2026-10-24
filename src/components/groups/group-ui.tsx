@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { CATEGORY_COLORS, CATEGORY_ICONS, categoryKey, cleanCategoryName, type CategoryIcon } from "@/modules/groups/categories";
+import { BRAND_NAME } from "@/config/brand";
 
 export interface GroupCategory { id: string; name: string; color: string; icon: string | null }
 export interface GroupRow {
@@ -142,7 +143,7 @@ export function CategoryDialog({ open, onOpenChange, sessionId, categories, edit
                 <DialogContent className="grid-cols-[minmax(0,1fr)] sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>{editing ? "Editar categoria" : "Nova categoria"}</DialogTitle>
-                        <DialogDescription>Organização interna do MarcFlow. Nada muda no WhatsApp.</DialogDescription>
+                        <DialogDescription>Organização interna do {BRAND_NAME}. Nada muda no WhatsApp.</DialogDescription>
                     </DialogHeader>
                     <form className="space-y-5" onSubmit={e => { e.preventDefault(); save(); }}>
                         <div className="space-y-1.5">

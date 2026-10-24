@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { CategoryBadge, groupName, type GroupCategory, type GroupRow } from "./group-ui";
+import { BRAND_NAME } from "@/config/brand";
 
 // ---------------------------------------------------------------- batch runner
 
@@ -135,7 +136,7 @@ export function BatchCategoryDialog({ sessionId, groups, categories, onClose, on
             <DialogContent className="grid-cols-[minmax(0,1fr)] sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>Alterar categoria de {groups.length} {groups.length === 1 ? "grupo" : "grupos"}</DialogTitle>
-                    <DialogDescription>Organização interna do MarcFlow. Nada muda no WhatsApp.</DialogDescription>
+                    <DialogDescription>Organização interna do {BRAND_NAME}. Nada muda no WhatsApp.</DialogDescription>
                 </DialogHeader>
                 <AffectedList groups={groups} />
                 <div className="max-h-60 space-y-0.5 overflow-y-auto" role="radiogroup" aria-label="Nova categoria">
@@ -356,7 +357,7 @@ const MODES: Record<RemoveMode, { title: string; word: string; verb: string; con
         title: "Sair e excluir as conversas", word: "EXCLUIR", verb: "Excluindo",
         consequences: [
             "Primeiro você sai de cada grupo (perde o acesso, como acima).",
-            "Depois a conversa e todo o histórico são excluídos da conta conectada: no seu WhatsApp e no MarcFlow. Não dá para desfazer.",
+            `Depois a conversa e todo o histórico são excluídos da conta conectada: no seu WhatsApp e no ${BRAND_NAME}. Não dá para desfazer.`,
             "Os grupos continuam existindo para os outros participantes: o WhatsApp não permite excluir um grupo para todos.",
         ],
     },
@@ -409,7 +410,7 @@ export function BatchRemoveDialog({ sessionId, groups, initialMode, onClose, onR
                             <ul className="list-disc space-y-1 pl-5 text-foreground/80">{m.consequences.map(c => <li key={c}>{c}</li>)}</ul>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            Não existe “remover só do MarcFlow”: enquanto você participar do grupo, ele volta na próxima sincronização com o WhatsApp.
+                            Não existe “remover só do {BRAND_NAME}”: enquanto você participar do grupo, ele volta na próxima sincronização com o WhatsApp.
                         </p>
                         <div className="space-y-1.5">
                             <Label htmlFor="confirm-word">Para confirmar, digite <span className="font-mono font-bold">{m.word}</span></Label>

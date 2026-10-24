@@ -9,6 +9,7 @@ import os from "os";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { logger } from "@/lib/logger";
+import { BRAND_NAME } from "@/config/brand";
 
 const execAsync = promisify(exec);
 
@@ -28,10 +29,14 @@ const DEFAULT_CONFIG = {
     maxStickerDuration: 10,
     enablePing: true,
     enableUptime: true,
-    botName: "MarcFlow Bot",
+    botName: `${BRAND_NAME} Bot`,
     prefix: "#",
     removeBgApiKey: null as string | null
 };
+
+function getBotName(botName?: string | null) {
+    return botName && botName !== "MarcFlow Bot" ? botName : `${BRAND_NAME} Bot`;
+}
 
 export function setSessionStartTime(sessionId: string) {
     if (!startTimes.has(sessionId)) {
@@ -306,8 +311,8 @@ export async function handleBotCommand(
 
                     // Convert
                     const sticker = new Sticker(buffer as Buffer, {
-                        pack: (config as any).botName || "MarcFlow Bot",
-                        author: "By " + ((config as any).botName || "MarcFlow Bot"),
+                        pack: getBotName((config as any).botName),
+                        author: "By " + getBotName((config as any).botName),
                         type: "full", // full, crop, circle
                         quality: 15 // Extreme quality reduction for size
                     });
@@ -327,7 +332,7 @@ export async function handleBotCommand(
 
             case "menu":
             case "help": {
-                const botName = (config as any).botName || "MarcFlow Bot";
+                const botName = getBotName((config as any).botName);
                 const menu = `
 🤖 *${botName} Menu* 🤖
 

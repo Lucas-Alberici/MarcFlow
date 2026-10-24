@@ -63,7 +63,7 @@ export default function TermsPage() {
 
                         <h2 className="mt-8 text-2xl border-b pb-2">2. Política de uso aceitável</h2>
                         <p>
-                            Ao usar a API, as respostas automáticas e os recursos de transmissão do MarcFlow, você concorda em seguir os Termos de Serviço oficiais e as políticas antispam do WhatsApp. Você concorda em não:
+                            Ao usar a API, as respostas automáticas e os recursos de transmissão do {BRAND_NAME}, você concorda em seguir os Termos de Serviço oficiais e as políticas antispam do WhatsApp. Você concorda em não:
                         </p>
                         <ul>
                             <li>Enviar mensagens de "spam" não solicitadas ou campanhas promocionais em massa para usuários que não tenham dado consentimento explícito.</li>

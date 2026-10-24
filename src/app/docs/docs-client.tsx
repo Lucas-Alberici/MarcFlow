@@ -8,6 +8,7 @@ import { Menu, Search, ChevronRight, Copy, Check } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { BRAND_NAME, UPSTREAM_URL } from "@/config/brand";
 
 interface TocItem {
     text: string;
@@ -302,10 +303,9 @@ export function DocsClient({ content, toc }: DocsClientProps) {
                 </article>
 
                 <footer className="mt-20 pt-8 border-t text-center text-sm text-gray-400">
-                    <p>© {new Date().getFullYear()} MarcFlow · criado por Marcos Maia (@marcolamaia). Todos os direitos reservados.</p>
+                    <p>© {new Date().getFullYear()} {BRAND_NAME} · baseado no <a href={UPSTREAM_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">MarcFlow, criado por Marcos Maia</a>.</p>
                 </footer>
             </main>
         </div>
     );
 }
-

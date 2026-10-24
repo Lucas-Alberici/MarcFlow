@@ -72,6 +72,7 @@ export default function BotSettingsPage() {
                     setBotConfig(prev => ({
                         ...prev,
                         ...data,
+                        botName: data.botName && data.botName !== "MarcFlow Bot" ? data.botName : `${BRAND_NAME} Bot`,
                         removeBgApiKey: data.removeBgApiKey || "",
                         prefix: data.prefix || "#",
                         welcomeMessage: data.welcomeMessage || "",
@@ -195,7 +196,7 @@ export default function BotSettingsPage() {
                             <div className="grid gap-2">
                                 <Label>Nome do bot</Label>
                                 <Input
-                                    placeholder="MarcFlow Bot"
+                                    placeholder={`${BRAND_NAME} Bot`}
                                     value={botConfig.botName}
                                     onChange={(e) => setBotConfig(prev => ({ ...prev, botName: e.target.value }))}
                                 />

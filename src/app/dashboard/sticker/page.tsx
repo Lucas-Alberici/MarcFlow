@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 import { useSession } from "@/components/dashboard/session-provider";
 import { SessionGuard } from "@/components/dashboard/session-guard";
+import { BRAND_NAME } from "@/config/brand";
 
 export default function StickerPage() {
     const { sessionId } = useSession();
@@ -19,7 +20,7 @@ export default function StickerPage() {
     const [loading, setLoading] = useState(false);
 
     // Advanced options
-    const [pack, setPack] = useState("MarcFlow");
+    const [pack, setPack] = useState(BRAND_NAME);
     const [author, setAuthor] = useState("User");
     const [quality, setQuality] = useState(50);
     const [type, setType] = useState("full");
