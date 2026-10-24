@@ -17,7 +17,7 @@ export default function SettingsPage() {
     const [systemConfig, setSystemConfig] = useState({
         appName: BRAND_NAME,
         logoUrl: "",
-        timezone: "Asia/Jakarta",
+        timezone: "America/Sao_Paulo",
         enableRegistration: true
     });
     const [systemLoading, setSystemLoading] = useState(false);
@@ -49,7 +49,7 @@ export default function SettingsPage() {
                         logoUrl: data.logoUrl || "",
                         // @ts-ignore
                         faviconUrl: data.faviconUrl || "/favicon.ico",
-                        timezone: data.timezone || "Asia/Jakarta",
+                        timezone: data.timezone || process.env.TZ || "America/Sao_Paulo",
                         enableRegistration: data.enableRegistration !== undefined ? data.enableRegistration : true
                     });
                 }

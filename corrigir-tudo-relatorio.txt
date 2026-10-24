@@ -1,0 +1,40 @@
+=== 1. .env ===
+  TZ ok (America/Sao_Paulo)
+  LOCALE: id-ID -> pt-BR
+
+=== 2. IMPORTS DO BAILEYS ===
+  Baileys instalado: 7.0.0-rc.9 (ESM nativo)
+  nada a corrigir
+  (src/modules/whatsapp/baileys.ts nao e mais usado; pode apagar)
+
+=== 3. CRON E FUSO HORARIO ===
+  cron.ts: ok
+  scheduler.ts duplicado: ja desativado
+  src/app/dashboard/scheduler/page.tsx: fuso padrao ajustado
+  src/app/dashboard/settings/page.tsx: fuso padrao ajustado
+  src/components/dashboard/realtime-clock.tsx: fuso padrao ajustado
+  src/components/dashboard/webhook-log-dialog.tsx: fuso padrao ajustado
+  banco: fuso ja esta em America/Sao_Paulo
+  mensagens agendadas PENDING: 0
+
+=== 4. GRAVANDO ===
+  OK  .env
+  OK  src/app/dashboard/scheduler/page.tsx
+  OK  src/app/dashboard/settings/page.tsx
+  OK  src/components/dashboard/realtime-clock.tsx
+  OK  src/components/dashboard/webhook-log-dialog.tsx
+  Originais em .corrigir-tudo-backup/
+
+=== 5. VERIFICACAO ===
+  analise estatica: nenhum problema
+  rodando tsc --noEmit (pode levar alguns minutos)...
+  tsc: 4 erro(s) de tipo
+   - src/app/api/messages/[sessionId]/[jid]/sticker/route.ts(48,29): error TS2351: This expression is not constructable.
+   - src/modules/whatsapp/bot/command-handler.ts(313,41): error TS2351: This expression is not constructable.
+   - src/modules/whatsapp/chat.service.ts(278,37): error TS2351: This expression is not constructable.
+   - src/modules/whatsapp/chat.service.ts(423,33): error TS2351: This expression is not constructable.
+
+=============================== RESUMO ===============================
+Arquivos alterados: 5
+
+Proximo passo: pare o servidor (Ctrl+C) e rode  npm run dev

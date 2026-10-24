@@ -3,11 +3,21 @@ import cronParser from "cron-parser";
 import { prisma } from "@/lib/prisma";
 import { waManager } from "@/modules/whatsapp/manager";
 import { logger } from "./logger";
+async function getTimezone(): Promise<string> {
+    try {
+        const cfg = await prisma.systemConfig.findUnique({ where: { id: "default" } });
+        return cfg?.timezone || process.env.TZ || "America/Sao_Paulo";
+    } catch {
+        return process.env.TZ || "America/Sao_Paulo";
+    }
+}
+
 export function initScheduler() {
     // Run every minute
     cron.schedule("* * * * *", async () => {
         try {
             const now = new Date();
+            const tz = await getTimezone();
             
             // Fetch pending messages due for sending
             const pendingMessages = await prisma.scheduledMessage.findMany({
@@ -65,7 +75,7 @@ export function initScheduler() {
 
                     // Update status or compute next sendAt if recurring
                     if (msg.cronExpression) {
-                        const interval = cronParser.parse(msg.cronExpression, { tz: "Asia/Jakarta" });
+                        const interval = cronParser.parse(msg.cronExpression, { tz });
                         const nextDate = interval.next().toDate();
                         await prisma.scheduledMessage.update({
                             where: { id: msg.id },
@@ -86,7 +96,7 @@ export function initScheduler() {
                             data: { status: "FAILED" } // Failed to send
                         });
                     } else {
-                        const interval = cronParser.parse(msg.cronExpression, { tz: "Asia/Jakarta" });
+                        const interval = cronParser.parse(msg.cronExpression, { tz });
                         await prisma.scheduledMessage.update({
                             where: { id: msg.id },
                             data: { sendAt: interval.next().toDate() }

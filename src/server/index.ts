@@ -60,7 +60,8 @@ app.prepare().then(() => {
   import("../modules/archive/import").then(m => m.pauseOrphanedArchives()).catch(e => logger.error("Archive", "could not pause orphaned exports", e));
 
   // Start Scheduler
-  import("../modules/whatsapp/scheduler").then(m => m.startScheduler());
+  // [cron-doctor] desativado: duplicava o cron.ts e procurava a sessao pelo id errado
+  // import("../modules/whatsapp/scheduler").then(m => m.startScheduler());
 
   // Cloudflare 520 Fix: increase keep-alive timeout so Node doesn't kill idle connections that Cloudflare expects to reuse
   // See: https://github.com/vercel/next.js/issues/48962
