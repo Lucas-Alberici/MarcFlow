@@ -31,7 +31,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { SessionGuard } from "@/components/dashboard/session-guard";
 
-export const WAP_COLORS = [
+const WAP_COLORS = [
     "#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF",
     "#4B0082", "#9400D3", "#FF1493", "#00CED1", "#32CD32",
     "#FFD700", "#FF69B4", "#8B4513", "#2F4F4F", "#696969",
