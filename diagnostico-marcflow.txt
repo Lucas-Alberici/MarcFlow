@@ -1,0 +1,60 @@
+=== 1. AMBIENTE ===
+Node: v24.13.1 | SO: win32
+Projeto: m7-connect 1.0.0 | type: (commonjs)
+  @whiskeysockets/baileys: pede ^7.0.0-rc.9 | instalado 7.0.0-rc.9
+  next: pede 16.4.3 | instalado 16.4.3
+  react: pede 19.2.3 | instalado 19.2.3
+  @prisma/client: pede ^5.22.0 | instalado 5.22.0
+  prisma: pede ^5.22.0 | instalado 5.22.0
+  typescript: pede ^5.9.3 | instalado 5.9.3
+  tsx: pede ^4.21.0 | instalado 4.21.0
+  jimp: pede ^0.22.12 | instalado 0.22.12
+  Baileys instalado e ESM nativo (7.0.0-rc.9)
+  patch: @whiskeysockets+baileys+7.0.0-rc.9.patch (instalado: 7.0.0-rc.9)
+
+=== 2. .ENV ===
+  chaves definidas: PORT, DATABASE_URL, AUTH_SECRET, BASE_URL, NODE_ENV, HOSTNAME, NEXTAUTH_URL, AUTH_TRUST_HOST, NEXT_PUBLIC_APP_URL, NEXT_PUBLIC_API_URL, APP_NAME, LOGO_URL, FAVICON_URL, NEXT_PUBLIC_CHAT_PAGE_SIZE, NEXT_PUBLIC_ALLOW_INDEXING, NEXT_PUBLIC_SWAGGER_ENABLED, NEXT_PUBLIC_SWAGGER_USERNAME, NEXT_PUBLIC_SWAGGER_PASSWORD, BAILEYS_LOG_LEVEL, REMOVE_BG_API_KEY, ENABLE_NOTIFICATIONS, ENABLE_AUTO_UPDATE_CHECK, ENABLE_EXPERIMENTAL_FEATURES, SESSION_TIMEOUT_HOURS, MAX_UPLOAD_SIZE_MB, ENABLE_RATE_LIMITING, RATE_LIMIT_PER_MINUTE, TZ, LOCALE, MEDIA_STORAGE_PATH, NEXT_PUBLIC_GA_ID, MYSQL_ROOT_PASSWORD, MYSQL_DATABASE, ADMIN_EMAIL, ADMIN_PASSWORD
+  DATABASE_URL: mysql://marcflow_app:***@127.0.0.1:3306/marcflow
+  Prisma provider: mysql
+  Banco 127.0.0.1:3306 ACESSIVEL (porta aberta)
+
+=== 3. ANALISE ESTATICA DO CODIGO (src) ===
+  277 arquivos .ts/.tsx em src/
+
+=== 4. TYPESCRIPT (tsc --noEmit) - pode levar alguns minutos ===
+  13 erro(s) de tipo
+
+=============================== RESUMO ===============================
+Erros: 2 | Avisos: 0 | Erros de tipo (tsc): 13
+
+--- nome-duplicado (2) ---
+[ERRO] src/modules/whatsapp/instance.ts:20 - "makeWASocket" definido mais de uma vez (linhas 1, 20).
+[ERRO] src/modules/whatsapp/instance.ts:20 - "DisconnectReason" definido mais de uma vez (linhas 2, 20).
+
+--- tsc: codigos mais frequentes ---
+  TS2351: 4x
+  TS2300: 4x
+  TS2552: 3x
+  TS2304: 2x
+
+--- tsc: arquivos com mais erros ---
+  5x src/modules/whatsapp/auth/usePrismaAuthState.ts
+  4x src/modules/whatsapp/instance.ts
+  2x src/modules/whatsapp/chat.service.ts
+  1x src/app/api/messages/[sessionId]/[jid]/sticker/route.ts
+  1x src/modules/whatsapp/bot/command-handler.ts
+
+--- tsc: primeiros erros ---
+  src/app/api/messages/[sessionId]/[jid]/sticker/route.ts:48 TS2351 This expression is not constructable.
+  src/modules/whatsapp/auth/usePrismaAuthState.ts:18 TS2552 Cannot find name 'prisma'. Did you mean 'Prism'?
+  src/modules/whatsapp/auth/usePrismaAuthState.ts:26 TS2304 Cannot find name 'logger'.
+  src/modules/whatsapp/auth/usePrismaAuthState.ts:37 TS2552 Cannot find name 'prisma'. Did you mean 'Prism'?
+  src/modules/whatsapp/auth/usePrismaAuthState.ts:43 TS2304 Cannot find name 'logger'.
+  src/modules/whatsapp/auth/usePrismaAuthState.ts:50 TS2552 Cannot find name 'prisma'. Did you mean 'Prism'?
+  src/modules/whatsapp/bot/command-handler.ts:313 TS2351 This expression is not constructable.
+  src/modules/whatsapp/chat.service.ts:278 TS2351 This expression is not constructable.
+  src/modules/whatsapp/chat.service.ts:423 TS2351 This expression is not constructable.
+  src/modules/whatsapp/instance.ts:1 TS2300 Duplicate identifier 'makeWASocket'.
+  src/modules/whatsapp/instance.ts:2 TS2300 Duplicate identifier 'DisconnectReason'.
+  src/modules/whatsapp/instance.ts:20 TS2300 Duplicate identifier 'makeWASocket'.
+  src/modules/whatsapp/instance.ts:20 TS2300 Duplicate identifier 'DisconnectReason'.

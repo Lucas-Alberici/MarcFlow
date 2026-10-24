@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import { AuthenticationCreds, AuthenticationState, BufferJSON, initAuthCreds, proto, SignalDataTypeMap } from "@whiskeysockets/baileys";
 import { logger } from "@/lib/logger";
+import type { AuthenticationCreds, AuthenticationState, SignalDataTypeMap } from "@whiskeysockets/baileys";
+import { BufferJSON, initAuthCreds, proto } from "@whiskeysockets/baileys";
 
 /**
  * DB key for an auth item. MySQL's default collation is case-insensitive, but app-state key ids are base64,
